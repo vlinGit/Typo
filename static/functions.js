@@ -5,10 +5,18 @@ const http = new XMLHttpRequest();
 var isFocused = false;
 var words = document.getElementsByClassName('word');
 
+function focusText(){
+    document.getElementById("focus").focus();
+}
+
 function updateText(curIndex, progress, backspace=false){
     var letter = document.getElementsByTagName("letter")[curIndex];
     var progressDiv = document.getElementById("progress");
     var progressBar = document.getElementsByTagName("progressBar")[0];
+    var maxWidth = parseInt(window.getComputedStyle(progressBar).getPropertyValue("max-width"));
+    var percent = document.getElementsByTagName("percent")[0];
+    var percentWidth = parseInt(percent.getBoundingClientRect().width) + 10;
+
     if (letter){
         if (backspace){
             var pre = document.getElementsByTagName("letter")[curIndex-1];
@@ -19,9 +27,11 @@ function updateText(curIndex, progress, backspace=false){
             letter.id = "complete";
             next.id = "current";
         }
-        progressDiv.innerHTML = progress;
-        progressBar.style.transform = "scaleX(100)";
     }
+
+    percent.style.marginLeft = Math.max(0,((progress/100)*maxWidth) - percentWidth) + "px";
+    percent.innerHTML = parseInt(progress) + "%";
+    progressBar.style.width = (progress/100)*maxWidth + "px";
 }
 
 function wrongText(curIndex){
@@ -40,7 +50,7 @@ function wrongText(curIndex){
 }
 
 function restart(){
-    location.reload();
+    window.location.host = "/";
 }
 
 function done(netWPM, acc, time){
@@ -59,21 +69,7 @@ function done(netWPM, acc, time){
     restart.style.visibility = "visible";
 }
 
-window.addEventListener("keypress", function(e){
-    if (e.key != "Enter"){
-        ws.send(JSON.stringify({ key: e.key }));
-    }
-});
-
-window.addEventListener("keydown", function(e){
-    if (e.key == "Backspace"){
-        const toDelete = document.getElementById("current");
-        ws.send(JSON.stringify({ key: "Backspace", toDelete: toDelete}))
-    }
-});
-
-ws.onmessage = function(wsMessage){
-    const message = JSON.parse(wsMessage.data);
+function gameMessage(message){
     const correct = message.correct;
     const status = message.status;
     const cur = message.currentLetter;
@@ -90,5 +86,32 @@ ws.onmessage = function(wsMessage){
         updateText(cur, progress, backspace);
     }else{
         wrongText(cur);
+    }
+}
+
+window.addEventListener("keypress", function(e){
+    if (e.key != "Enter"){
+        ws.send(JSON.stringify({ key: e.key }));
+        e.preventDefault();
+    }
+});
+
+window.addEventListener("keydown", function(e){
+    if (e.key == "Backspace"){
+        const toDelete = document.getElementById("current");
+        ws.send(JSON.stringify({ key: "Backspace", toDelete: toDelete}))
+    }
+});
+
+ws.onmessage = function(wsMessage){
+    const message = JSON.parse(wsMessage.data);
+    const match = message.match;
+
+    if (match == "game"){
+        gameMessage(message);
+    }else if(match == "host"){
+        hostMessage(message);
+    }else if(match == "join"){
+        joinMessage(message);
     }
 }

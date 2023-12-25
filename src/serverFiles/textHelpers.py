@@ -92,16 +92,17 @@ def checker(db: Database, userID: str, key: str, textData, time=0):
         textData = db.getText(userID)
         charDict = textData.get("charDict")
         stats = calculate(length, time, textData.get("wrong", 0), uncorrectedCount(charDict))
-        toSend = json.dumps({"status": "done", "correct": True, "currentLetter": curLetter, "stats": stats, "length":length, "progress": 100})
+        toSend = json.dumps({"match":"game", "status": "done", "correct": True, "currentLetter": curLetter, "stats": stats, "length":length, "progress": 100})
     else:
         rightKey = content[curLetter]
+        progress = "%02d" % (((curLetter+1)/length)*100)
         if key == rightKey:
             # Sets the current character as correct in the charDict
             setCorrect(db, textData, curLetter, length, userID)
             
-            toSend = json.dumps({"status": "inprogress", "correct": True, "currentLetter": curLetter, "length": length, "progress": round((curLetter+1)/length,2)*100})
+            toSend = json.dumps({"match":"game", "status": "inprogress", "correct": True, "currentLetter": curLetter, "length": length, "progress": progress})
         else:
-            toSend = {"status": "inprogress", "correct": False, "actual": rightKey, "currentLetter": curLetter, "length": length, "progress": round((curLetter+1)/length,2)*100}
+            toSend = {"match":"game", "status": "inprogress", "correct": False, "actual": rightKey, "currentLetter": curLetter, "length": length, "progress": progress}
             
             if (key == "Backspace"):
                 toSend["backspace"] = True

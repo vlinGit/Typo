@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typo</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}"/>
+    <script src="{{ url_for('static', filename='functions.js') }}"></script>
+</head>
+<body>
+    <div class="main">
+        <div class="banner">
+            <p id="title">Typo</p>
+        </div>
+
+        <div class="type">
+            
+            <div id="textbox">
+                <div id="info">
+                    <p >Author: {{author}}</p>
+                    <p>Length: {{length}}</p>
+                </div>
+                {%- set count = namespace(value=0) -%}
+                {%for word in textList -%}
+                    <div class="word">
+                        {%for letter in word -%}
+                            {%if count.value == 0 -%}
+                                <letter id='current'>{{letter}}</letter>
+                            {%- else -%}
+                                <letter id={{count.value}}>{{letter}}</letter>
+                            {%- endif -%}
+                            {%- set count.value = count.value + 1 -%}
+                        {%- endfor -%}
+                        <letter id={{count.value}}> </letter>
+                        {%- set count.value = count.value + 1 -%}
+                    </div>
+                {%- endfor%}
+            </div>
+
+        </div>
+
+        <div id="details">
+            <div id="progress">
+                <progressBar></progressBar>
+                <percent>{{percentage}}%</percent>
+            </div>
+
+            <div id="restart">
+                <p>Finished</p>
+                <div id="stats"></div>
+                <button id="restartButton" type="button" onclick="restart();">Home</button>
+            </div>
+        </details>
+    </div>
+</body>
+</html>

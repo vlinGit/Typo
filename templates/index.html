@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Typo</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}"/>
-    <script src="{{ url_for('static', filename='functions.js') }}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+    <script src="{{ url_for('static', filename='home.js') }}"></script>
+    <title>Home Page</title>
 </head>
 <body>
     <div class="main">
@@ -14,42 +13,10 @@
             <p id="title">Typo</p>
         </div>
 
-        <div class="type">
-            
-            <div id="textbox">
-                <div id="info">
-                    <p >Author: {{author}}</p>
-                    <p>Length: {{length}}</p>
-                </div>
-                {%- set count = namespace(value=0) -%}
-                {%for word in textList -%}
-                    <div class="word">
-                        {%for letter in word -%}
-                            {%if count.value == 0 -%}
-                                <letter id='current'>{{letter}}</letter>
-                            {%- else -%}
-                                <letter id={{count.value}}>{{letter}}</letter>
-                            {%- endif -%}
-                            {%- set count.value = count.value + 1 -%}
-                        {%- endfor -%}
-                        <letter id={{count.value}}> </letter>
-                        {%- set count.value = count.value + 1 -%}
-                    </div>
-                {%- endfor%}
-            </div>
-
-        </div>
-
-        <div id="progress">
-            {{percentage}}%
-            <progressBar></progressBar>
-        </div>
-
-        <div id="restart">
-            <p>Finished</p>
-            <div id="stats"></div>
-            <button id="restartButton" type="button" onclick="restart();">Restart</button>
+        <div id="choices">
+            <a href="{{url_for('game')}}">Solo</a>
+            <a href="{{url_for('host')}}">Host</a>
+            <a href="{{url_for('join')}}">Join</a>
         </div>
     </div>
 </body>
-</html>
